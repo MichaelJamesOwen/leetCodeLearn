@@ -1,4 +1,4 @@
-第一次提交
+//第一次提交
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) 
@@ -20,7 +20,34 @@ public:
     }
 };
 
-第二次提交
+//未提交之中间思路，区别，此处先push下标再push
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) 
+    {
+        vector<int> vResult;
+        map<int, int> mTest;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            mTest[nums[i]] = i;
+        }
+        
+        for(int i = 0; i < nums.size(); i++)
+        {
+            int key = target - nums[i];
+            auto it = mTest.find(key);
+            if (it != mTest.end())
+            {
+                vResult.push_back(i);
+                vResult.push_back(mTest[key]);
+                return vResult;
+            }
+        }
+        return vResult;
+    }
+};
+
+//第二次提交
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) 
@@ -43,3 +70,4 @@ public:
         return vResult;
     }
 };
+
