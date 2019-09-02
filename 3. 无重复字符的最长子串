@@ -125,3 +125,36 @@ public:
         return nMaxLength;
     }
 };
+
+//第四次提交
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int nMaxLength = 0;
+        int nTempLength = 0;
+        unordered_map<char, int> mTemp;
+        int nNowBegin = 0;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if (mTemp.find(s[i]) == mTemp.end() || mTemp[s[i]] < nNowBegin)
+            {
+                mTemp[s[i]] = i;
+            }
+            else
+            {
+                int nOldBegin = nNowBegin;
+                nNowBegin = mTemp[s[i]] + 1;
+                nTempLength -= nNowBegin - nOldBegin;
+                mTemp[s[i]] = i;
+            }
+
+            nTempLength++;
+
+            if (nTempLength > nMaxLength)
+            {
+                nMaxLength = nTempLength;
+            }
+        }
+        return nMaxLength;
+    }
+};
