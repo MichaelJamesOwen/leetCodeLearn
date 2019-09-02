@@ -20,3 +20,74 @@
 来源：力扣（LeetCode）
 链接：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+//第一次提交
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) 
+    {
+        int nMaxLength = 0;
+        for (int i = 0; i < s.length(); i++)
+        {
+            map<char, int> mTemp;
+            mTemp[s[i]] = 1;
+            int nTempLength = 1;
+            for (int j = i + 1; j < s.length(); j++)
+            {
+                if (mTemp.find(s[j]) == mTemp.end())
+                {
+                    mTemp[s[j]] = 1;
+                    nTempLength++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (nTempLength > nMaxLength)
+            {
+                nMaxLength = nTempLength;
+            }
+        }
+        return nMaxLength;
+    }
+};
+
+第二次提交
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) 
+    {
+        int nMaxLength = 0;
+        int nTempLength = 0;
+        map<char, int> mTemp;
+        int nNowBegin = 0;
+        for (int i = 0; i < s.length(); i++)
+        {
+            if (mTemp.find(s[i]) == mTemp.end())
+            {
+                mTemp[s[i]] = i;
+            }
+            else
+            {
+                int nOldBegin = nNowBegin;
+                nNowBegin = mTemp[s[i]] + 1;
+                for (int j = nOldBegin; j < nNowBegin; j++)
+                {
+                    mTemp.erase(s[j]);
+                }
+                nTempLength -= nNowBegin - nOldBegin;
+                mTemp[s[i]] = i;
+            }
+
+            nTempLength++;
+
+            if (nTempLength > nMaxLength)
+            {
+                nMaxLength = nTempLength;
+            }
+        }
+        return nMaxLength;
+    }
+};
