@@ -1,0 +1,49 @@
+给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+全排列问题可以用广度与深度遍历来做
+
+第一次答题：
+
+void permuteHelp(int index, vector<int>& nums, vector<int>& temp, vector<vector<int>>& retVec)
+{
+	for (int i = index; i < nums.size(); i++)
+	{
+		vector<int> other;
+		int now = nums[i];
+		temp.push_back(now);
+		for (int j = 0; j < nums.size(); j++)
+		{
+			if (now == nums[j])
+			{
+				continue;
+			}
+			other.push_back(nums[j]);
+		}
+		
+		if (other.size() > 0)
+		{
+			permuteHelp(0, other, temp, retVec);
+		}
+		else
+		{
+			retVec.push_back(temp);
+		}
+		
+		temp.pop_back();
+	}
+}
+
+vector<vector<int>> permute(vector<int>& nums) 
+{
+	vector<vector<int>> retVec;
+	vector<int> temp;
+
+	permuteHelp(0, nums, temp, retVec);
+	return retVec;
+}
+
