@@ -47,3 +47,26 @@ vector<vector<int>> permute(vector<int>& nums)
 	return retVec;
 }
 
+第二次解答，深度优先遍历与回溯算法（官方答案）：
+void permuteHelp(vector<int>& nums, vector<vector<int>>& ret, int index, int len)
+{
+	if (index == len) 
+	{
+	    ret.emplace_back(nums);
+	    return;
+	}
+
+	for (int i = index; i < len; ++i) 
+	{
+	    swap(nums[i], nums[index]);
+	    permuteHelp(nums, ret, index + 1, len);
+	    swap(nums[i], nums[index]);
+	}
+}
+
+vector<vector<int>> permute(vector<int>& nums)
+{
+	vector<vector<int>> ret;
+	permuteHelp(nums, ret, 0, nums.size());
+	return ret;
+}
