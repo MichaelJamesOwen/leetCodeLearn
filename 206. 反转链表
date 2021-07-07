@@ -1,0 +1,20 @@
+第一次提交：
+void reverseListHelp(ListNode* head, ListNode** pNow)
+{
+    if (head == nullptr)
+    {
+        return;
+    }
+
+    ListNode* pNext = head->next;
+    head->next = *pNow;
+    *pNow = head;
+    reverseListHelp(pNext, pNow);
+}
+
+ListNode* reverseList(ListNode* head)
+{
+    ListNode* pNow = nullptr;
+    reverseListHelp(head, &pNow);
+    return pNow;
+}
