@@ -8,3 +8,238 @@ void put(int key, int value) 如果关键字已经存在，则变更其数据�
 
 进阶：你是否可以在 O(1) 时间复杂度内完成这两种操作？
 
+//自己做的不知道为啥提交通过不了，同样的测试用例，线下是对的，提交就是错误的。很搞笑
+class List
+{
+public:
+	List()
+	{
+		pNext = nullptr;
+		pPrev = nullptr;
+		nKey = 0;
+		nValue = 0;
+	}
+
+	List* pNext;
+	List* pPrev;
+	int nKey;
+	int nValue;
+};
+
+void moveHead(List* now, List** head, List** tail)
+{
+	if (now == *head)
+	{
+		return;
+	}
+
+	List* prev = now->pPrev;
+	List* next = now->pNext;
+
+	prev->pNext = next;
+	if (now == *tail)
+	{
+		*tail = (*tail)->pPrev;
+	}
+	else
+	{
+		next->pPrev = prev;
+	}
+
+	now->pPrev = nullptr;
+	now->pNext = *head;
+	(*head)->pPrev = now;
+
+	*head = now;
+}
+
+void pushFront(List** pHead, List** pTail, List* pNew)
+{
+	if (!*pHead)
+	{
+		*pHead = pNew;
+		*pTail = pNew;
+	}
+	else
+	{
+		pNew->pNext = *pHead;
+		(*pHead)->pPrev = pNew;
+		*pHead = pNew;
+	}
+}
+
+void popTail(List** pHead, List** pTail)
+{
+	List* pTemp = *pTail;
+	if (*pHead == *pTail)
+	{
+		*pHead = nullptr;
+		*pTail = nullptr;
+	}
+	else
+	{
+		List* pPrev = (*pTail)->pPrev;
+		pPrev->pNext = nullptr;
+		*pTail = pPrev;
+	}
+
+	delete pTemp;
+}
+
+class Master
+{
+public:
+	Master()
+	{
+		pHead = nullptr;
+		pTail = nullptr;
+		mHash.clear();
+		nCache = 0;
+	}
+
+	int get(int key)
+	{
+		if (mHash.find(key) == mHash.end())
+		{
+			return -1;
+		}
+
+		moveHead(mHash[key], &pHead, &pTail);
+
+		return mHash[key]->nValue;
+	}
+
+	void put(int key, int value)
+	{
+		if (nCache == 0)
+		{
+			return;
+		}
+
+		if (mHash.find(key) != mHash.end())
+		{
+			mHash[key]->nValue = value;
+			return;
+		}
+
+		if (mHash.size() >= nCache)
+		{
+			mHash.erase(pTail->nKey);
+			popTail(&pHead, &pTail);
+		}
+
+		List* pNew = new List;
+		pNew->nKey = key;
+		pNew->nValue = value;
+
+		pushFront(&pHead, &pTail, pNew);
+		mHash[pNew->nKey] = pNew;
+	}
+
+	List* pHead;
+	List* pTail;
+	unordered_map<int, List*> mHash;
+	int nCache;
+};
+
+Master oCacheMaster;
+
+void LRUCache(int capacity) {
+	oCacheMaster.nCache = capacity;
+}
+
+int get(int key) {
+	return oCacheMaster.get(key);
+}
+
+void put(int key, int value) {
+	oCacheMaster.put(key, value);
+}
+
+//标准答案
+struct DLinkedNode {
+    int key, value;
+    DLinkedNode* prev;
+    DLinkedNode* next;
+    DLinkedNode(): key(0), value(0), prev(nullptr), next(nullptr) {}
+    DLinkedNode(int _key, int _value): key(_key), value(_value), prev(nullptr), next(nullptr) {}
+};
+
+class LRUCache {
+private:
+    unordered_map<int, DLinkedNode*> cache;
+    DLinkedNode* head;
+    DLinkedNode* tail;
+    int size;
+    int capacity;
+
+public:
+    LRUCache(int _capacity): capacity(_capacity), size(0) {
+        // 使用伪头部和伪尾部节点
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head->next = tail;
+        tail->prev = head;
+    }
+    
+    int get(int key) {
+        if (!cache.count(key)) {
+            return -1;
+        }
+        // 如果 key 存在，先通过哈希表定位，再移到头部
+        DLinkedNode* node = cache[key];
+        moveToHead(node);
+        return node->value;
+    }
+    
+    void put(int key, int value) {
+        if (!cache.count(key)) {
+            // 如果 key 不存在，创建一个新的节点
+            DLinkedNode* node = new DLinkedNode(key, value);
+            // 添加进哈希表
+            cache[key] = node;
+            // 添加至双向链表的头部
+            addToHead(node);
+            ++size;
+            if (size > capacity) {
+                // 如果超出容量，删除双向链表的尾部节点
+                DLinkedNode* removed = removeTail();
+                // 删除哈希表中对应的项
+                cache.erase(removed->key);
+                // 防止内存泄漏
+                delete removed;
+                --size;
+            }
+        }
+        else {
+            // 如果 key 存在，先通过哈希表定位，再修改 value，并移到头部
+            DLinkedNode* node = cache[key];
+            node->value = value;
+            moveToHead(node);
+        }
+    }
+
+    void addToHead(DLinkedNode* node) {
+        node->prev = head;
+        node->next = head->next;
+        head->next->prev = node;
+        head->next = node;
+    }
+    
+    void removeNode(DLinkedNode* node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void moveToHead(DLinkedNode* node) {
+        removeNode(node);
+        addToHead(node);
+    }
+
+    DLinkedNode* removeTail() {
+        DLinkedNode* node = tail->prev;
+        removeNode(node);
+        return node;
+    }
+};
+
