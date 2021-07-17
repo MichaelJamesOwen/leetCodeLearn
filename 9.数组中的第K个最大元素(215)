@@ -42,3 +42,119 @@ int findKthLargest(vector<int>& nums, int k)
 
     return temp.back();
 }
+
+//自己写的快速排序
+class Solution {
+public:
+    void fastsort(vector<int>& nums, int i, int j, int k)
+    {
+        int n = i;
+        int m = j;
+        int index = n;
+        while (n < m)
+        {
+            if (nums[n] <= nums[m])
+            {
+                int temp = nums[n];
+                nums[n] = nums[m];
+                nums[m] = temp;
+                if (index == n)
+                {
+                    index = m;
+                    n++;
+                }
+                else
+                {
+                    index = n;
+                    m--;
+                }
+            }
+            else
+            {
+                if (index == n)
+                {
+                    m--;
+                }
+                else
+                {
+                    n++;
+                }
+            }
+
+            
+        }
+
+        if (index < k - 1)
+        {
+            fastsort(nums, index + 1, j, k);
+        }
+        else if (index > k - 1)
+        {
+            fastsort(nums, i, index - 1, k);
+        }
+    }
+
+    int findKthLargest(vector<int>& nums, int k) 
+    {
+        fastsort(nums, 0, nums.size() - 1, k);
+        return nums[k - 1];
+    }
+};
+
+//标准答案快速选择，思路是找到快排轴与k的关系，这样可以减少很多排序过程
+class Solution {
+public:
+    void fastsort(vector<int>& nums, int i, int j, int k)
+    {
+        int n = i;
+        int m = j;
+        int index = n;
+        while (n < m)
+        {
+            if (nums[n] <= nums[m])
+            {
+                int temp = nums[n];
+                nums[n] = nums[m];
+                nums[m] = temp;
+                if (index == n)
+                {
+                    index = m;
+                    n++;
+                }
+                else
+                {
+                    index = n;
+                    m--;
+                }
+            }
+            else
+            {
+                if (index == n)
+                {
+                    m--;
+                }
+                else
+                {
+                    n++;
+                }
+            }
+
+            
+        }
+
+        if (index < k - 1)
+        {
+            fastsort(nums, index + 1, j, k);
+        }
+        else if (index > k - 1)
+        {
+            fastsort(nums, i, index - 1, k);
+        }
+    }
+
+    int findKthLargest(vector<int>& nums, int k) 
+    {
+        fastsort(nums, 0, nums.size() - 1, k);
+        return nums[k - 1];
+    }
+};
