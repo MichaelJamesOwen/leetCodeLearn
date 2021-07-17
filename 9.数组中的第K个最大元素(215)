@@ -80,8 +80,6 @@ public:
                     n++;
                 }
             }
-
-            
         }
 
         if (index < k - 1)
@@ -102,6 +100,7 @@ public:
 };
 
 //标准答案快速选择，思路是找到快排轴与k的关系，这样可以减少很多排序过程
+//快排思路：通过一个index标记当前轴的位置，利用j进行遍历，小于目标值，则右移index，交换index与j的位置，index就是当前目标值的所在地。
 class Solution {
 public:
     int quickSelect(vector<int>& a, int l, int r, int index) 
