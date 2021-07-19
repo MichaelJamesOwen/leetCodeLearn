@@ -141,3 +141,44 @@ public:
         return quickSelect(nums, 0, nums.size() - 1, nums.size() - k);
     }
 };
+
+//自己做的堆排序
+class Solution {
+public:
+    void createTree(vector<int>& nums, int len)
+    {
+        int index = len / 2 - 1;
+        while (index >= 0)
+        {
+            if (nums[index * 2 + 1] >= nums[index])
+            {
+                int temp = nums[index];
+                nums[index] = nums[index * 2 + 1];
+                nums[index * 2 + 1] = temp;
+            }
+
+            if (index * 2 + 2 < len && nums[index * 2 + 2] >= nums[index])
+            {
+                int temp = nums[index];
+                nums[index] = nums[index * 2 + 2];
+                nums[index * 2 + 2] = temp;
+            }
+
+            index--;
+        }
+    }
+
+    int findKthLargest(vector<int>& nums, int k) 
+    { 
+        for (size_t i = 0; i < k; i++)
+        {
+            createTree(nums, nums.size() - i);
+
+            int temp = nums[0];
+            nums[0] = nums[nums.size() - i - 1];
+            nums[nums.size() - i - 1] = temp;
+        }
+        
+        return nums[nums.size() - k];
+    }
+};
