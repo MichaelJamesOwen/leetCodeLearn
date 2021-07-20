@@ -1,0 +1,66 @@
+给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+//自己写的答案
+class Solution {
+public:
+    int trap(vector<int>& height) 
+    {
+        int total = 0;
+        for (int i = 0; i < height.size();)
+        {
+            int j = i + 1;
+            int l = height[i];
+            int r = 0;
+            bool isBreak = false;
+            int second = 0;
+            int secondIndex = 0;
+
+            while (j < height.size())
+            {
+                r = height[j];
+                if (r >= l)
+                {
+                    isBreak = true;
+                    break;
+                }
+
+                if (r > second)
+                {
+                    second = r;
+                    secondIndex = j;
+                }
+
+                j++;
+            }
+
+            if (j == height.size() && !isBreak)
+            {
+                if (secondIndex > i + 1)
+                {
+                    int m = second;
+                    for (int k = i + 1; k < secondIndex; k++)
+                    {
+                        total += m - height[k];
+                    }
+
+                    i = secondIndex;
+                }
+                else
+                {
+                    i++;
+                }
+                
+                continue;
+            }
+
+            int m = min(l, r);
+            for (int k = i + 1; k < j; k++)
+            {
+                total += m - height[k];
+            }
+
+            i = j;
+        }
+        return total;
+    }
+};
