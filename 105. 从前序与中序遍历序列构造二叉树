@@ -1,0 +1,69 @@
+给定一棵树的前序遍历 preorder 与中序遍历  inorder。请构造二叉树并返回其根节点。
+
+//主要是需要熟悉树的前中后序遍历，根据思路反推树的结构，需要考虑清楚各种下标的细节，一次没有通过就是细节考虑的欠缺了。
+class Solution {
+public:
+    map<int, int> m_i;
+
+    int getInorderIndex(int val, vector<int>& inorder)
+    {
+        if (m_i.find(val) == m_i.end())
+        {
+            for (int i = 0; i < inorder.size(); i++)
+            {
+                m_i[inorder[i]] = i;
+            }
+        }
+
+        return m_i[val];
+    }
+
+    void help(TreeNode* pNew, vector<int>& preorder, vector<int>& inorder, int begin, int end, int iBegin, int iEnd)
+    {
+        if (begin >= preorder.size())
+        {
+            return;
+        }
+
+        pNew->val = preorder[begin];
+
+        if (begin >= end)
+        {
+            return;
+        }
+
+        int inorderIndex = getInorderIndex(pNew->val, inorder);
+        
+        int leftLen = inorderIndex - iBegin;
+        int rightLen = iEnd - inorderIndex;
+
+        int leftBegin = begin + 1;
+        int leftEnd = begin + leftLen;
+
+        int rightBegin = leftEnd + 1;
+        int rightEnd = leftEnd + rightLen;
+
+        if (leftLen > 0 && leftBegin <= end)
+        {
+            TreeNode* pLeft = new TreeNode;
+            pNew->left = pLeft;
+            help(pLeft, preorder, inorder, leftBegin, leftEnd, iBegin, inorderIndex - 1);
+        }
+
+        if (rightLen > 0 && rightBegin <= end)
+        {
+            TreeNode* pRight = new TreeNode;
+            pNew->right = pRight;
+            help(pRight, preorder, inorder, rightBegin, rightEnd, inorderIndex + 1, iEnd);
+        }
+    }
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) 
+    {
+        TreeNode* pNew = new TreeNode;
+
+        help(pNew, preorder, inorder, 0, preorder.size() - 1, 0, inorder.size() - 1);
+
+        return pNew;
+    }
+};
