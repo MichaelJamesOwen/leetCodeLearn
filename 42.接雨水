@@ -64,6 +64,7 @@ public:
         return total;
     }
 };
+
 //标准答案，采用了双指针进行循环 比我的单指针思路更清晰简单，且效率更高
 class Solution {
 public:
@@ -102,3 +103,27 @@ public:
         return ans;
     }
 };
+
+//动态规划算法，主要思路：
+//提前储存每个位置上所有左边柱子的最大值和所有右边柱子的最大值
+//然后比较两个数组位置上的最小值，用最小值减去当前位置的值进行累加
+int trap(vector<int>& height)
+{
+    if (height == null)
+        return 0;
+    int ans = 0;
+    int size = height.size();
+    vector<int> left_max(size), right_max(size);
+    left_max[0] = height[0];
+    for (int i = 1; i < size; i++) {
+        left_max[i] = max(height[i], left_max[i - 1]);
+    }
+    right_max[size - 1] = height[size - 1];
+    for (int i = size - 2; i >= 0; i--) {
+        right_max[i] = max(height[i], right_max[i + 1]);
+    }
+    for (int i = 1; i < size - 1; i++) {
+        ans += min(left_max[i], right_max[i]) - height[i];
+    }
+    return ans;
+}
