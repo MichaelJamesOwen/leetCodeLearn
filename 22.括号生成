@@ -1,0 +1,60 @@
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+示例 1：
+
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+示例 2：
+
+输入：n = 1
+输出：["()"]
+
+//继续动态规划，这道题自己先有一个想法，但是只能战胜百分之35的人，先贴出来，再去看答案
+class Solution {
+public:
+	vector<string> generateParenthesis(int n)
+	{
+		vector<string> ret;
+		ret.push_back("()");
+		if (n == 1)
+		{
+			return ret;
+		}
+
+		map<string, int> tempMap;
+		vector<string> tempVec;
+		for (int i = 1; i < n; i++)
+		{
+			tempMap.clear();
+			tempVec = ret;
+			ret.clear();
+			for (int j = 0; j < tempVec.size(); j++)
+			{
+				for (int k = 0; k < tempVec[j].length(); k++)
+				{
+					string s = tempVec[j];
+					s.insert(k, "(");
+					s.insert(k + 2, ")");
+					if (tempMap.find(s) == tempMap.end())
+					{
+						tempMap[s] = 1;
+					}
+				}
+
+				string s = tempVec[j];
+				s.insert(s.length(), "(");
+				s.insert(s.length(), ")");
+				if (tempMap.find(s) == tempMap.end())
+				{
+					tempMap[s] = 1;
+				}
+			}
+
+			for (auto it : tempMap)
+			{
+				ret.push_back(it.first);
+			}
+		}
+
+		return ret;
+	}
+};
