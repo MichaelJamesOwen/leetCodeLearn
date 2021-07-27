@@ -1,0 +1,83 @@
+给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+
+'.' 匹配任意单个字符
+'*' 匹配零个或多个前面的那一个元素
+所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+
+//又特么是一道动态规划的题，死磕好吧
+我们用f[i][j]表示s的前i个字符与p的前j个字符是否能够匹配。在进行状态转移时，我们考虑p的第j个字符的匹配情况：
+1、如果p[j] == 一个小写字母，那么我们必须在s中匹配一个相同的小写字母
+//伪代码
+if (p[j] == s[i])
+{
+    f[i][j] = f[i - 1][j - 1];
+}
+else
+{
+    f[i][j] = false;
+}
+
+2、如果p[j] == '*'，那么其本质上就两种情况：
+1)匹配s末尾的一个字符，将该字符扔掉，而该组合还可以继续进行匹配
+2)不匹配字符，将该组合扔掉，不再进行匹配
+
+//伪代码
+if (s[i] == p[j - 1])
+{
+    f[i][j] = f[i − 1][j] || f[i][j − 2];
+}
+else
+{
+    f[i][j] = f[i][j − 2];
+}
+
+//根据这个状态转移方程我们去看最终的答案
+
+//最终代码
+class Solution 
+{
+public:
+    bool isMatch(string s, string p) 
+    {
+        int m = s.size();
+        int n = p.size();
+
+        auto matches = [&](int i, int j) 
+        {
+            if (i == 0) 
+            {
+                return false;
+            }
+            if (p[j - 1] == '.') 
+            {
+                return true;
+            }
+            return s[i - 1] == p[j - 1];
+        };
+
+        vector<vector<int>> f(m + 1, vector<int>(n + 1));
+        f[0][0] = true;
+        for (int i = 0; i <= m; ++i) 
+        {
+            for (int j = 1; j <= n; ++j) 
+            {
+                if (p[j - 1] == '*') 
+                {
+                    f[i][j] |= f[i][j - 2];
+                    if (matches(i, j - 1)) 
+                    {
+                        f[i][j] |= f[i - 1][j];
+                    }
+                }
+                else 
+                {
+                    if (matches(i, j)) 
+                    {
+                        f[i][j] |= f[i - 1][j - 1];
+                    }
+                }
+            }
+        }
+        return f[m][n];
+    }
+};
