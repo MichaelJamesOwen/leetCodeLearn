@@ -1,0 +1,41 @@
+给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+
+计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+
+你可以认为每种硬币的数量是无限的。
+
+ 
+
+示例 1：
+
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+
+
+//经典动态规划
+//找到规律，d[i]表示凑够i金额需要的最小次数，那么我们从前向后计算，可以得到d[i]=min(d[i-j1], d[i-j2], d[i-j3]...) + 1。
+//比如实例1，我们要求得11，那么只需要比较10(11- 1) 9(11-2) 6(11-5)这三个金额次数中的最小值。而10 9 6 这三个值也是根据同样的规则计算出来的。
+
+class Solution {
+public:
+	int coinChange(vector<int>& coins, int amount) 
+	{
+		int Max = amount + 1;
+		vector<int> dp(amount + 1, Max);
+		dp[0] = 0;
+		for (int i = 1; i <= amount; ++i) 
+		{
+			for (int j = 0; j < (int)coins.size(); ++j) 
+			{
+				if (coins[j] <= i) 
+				{
+					int k = i - coins[j];
+					int temp = dp[k];
+					dp[i] = min(dp[i], temp + 1);
+				}
+			}
+		}
+		return dp[amount] > amount ? -1 : dp[amount];
+	}
+};
