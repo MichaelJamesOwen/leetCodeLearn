@@ -1,0 +1,59 @@
+给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+说明：
+
+拆分时可以重复使用字典中的单词。
+你可以假设字典中没有重复的单词。
+示例 1：
+
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+示例 2：
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     注意你可以重复使用字典中的单词。
+示例 3：
+
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+
+//动态规划，定义dp[i]表示字符串s前i个字符组成的字符串s[0...i-1]是否能被空格拆分成若干个字典中出现的单词。
+//从前往后计算考虑转移方程，每次转移的时候我们需要枚举包含位置i-1的最后一个单词，看它是否出现在字典中以及除去这部分的字符串是否合法即可。
+
+//简单点说，0到i-1是否符合条件，取决于[0...j-1]和[j...i-1]是否合法。
+//我们通过从小到大开始计算可以清楚每一个i的结果，这样当j循环到之前为true的地方时只需要看从j到i的这一段是否为true就好了。
+//dp[i]表示字符串s的前i个字符能否拆分成wordDict
+
+//状态转移方程：dp[i]=dp[j] && check(s[j..i−1])
+
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) 
+    {
+        auto wordDictSet = unordered_set <string>();
+        for (auto word : wordDict) 
+        {
+            wordDictSet.insert(word);
+        }
+
+        auto dp = vector <bool>(s.size() + 1);
+        dp[0] = true;
+        for (int i = 1; i <= s.size(); ++i) 
+        {
+            for (int j = 0; j < i; ++j) 
+            {
+                string temp = s.substr(j, i - j);
+                if (dp[j] && wordDictSet.find(temp) != wordDictSet.end())
+                {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        return dp[s.size()];
+    }
+};
