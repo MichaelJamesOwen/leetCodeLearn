@@ -1,0 +1,92 @@
+请根据每日 气温 列表 temperatures ，请计算在每一天需要等几天才会有更高的温度。如果气温在这之后都不会升高，请在该位置用 0 来代替。
+
+示例 1:
+
+输入: temperatures = [73,74,75,71,69,72,76,73]
+输出: [1,1,4,2,1,1,0,0]
+示例 2:
+
+输入: temperatures = [30,40,50,60]
+输出: [1,1,1,0]
+示例 3:
+
+输入: temperatures = [30,60,90]
+输出: [1,1,0]
+ 
+
+提示：
+
+1 <= temperatures.length <= 105
+30 <= temperatures[i] <= 100
+
+//自己的答案
+struct help
+{
+	int i;
+	int value;
+};
+class Solution {
+public:
+	vector<int> dailyTemperatures(vector<int>& temperatures) 
+	{
+		vector<int> ret(temperatures.size(), 0);
+		list<help> temp;
+		for (int i = 0; i < temperatures.size(); i++)
+		{
+			if (i == 0)
+			{
+				continue;
+			}
+		
+			if (temperatures[i] > temperatures[i - 1])
+			{
+				ret[i - 1] = 1;
+			}
+			else
+			{
+				help h;
+				h.i = i - 1;
+				h.value = temperatures[i - 1];
+				temp.push_back(h);
+			}
+
+			if (!temp.empty() && temperatures[i] > temp.back().value)
+			{
+				for (auto it = temp.rbegin(); it != temp.rend();)
+				{
+					if (it->value < temperatures[i])
+					{
+						ret[it->i] = i - it->i;
+						temp.pop_back();
+						it = temp.rbegin();
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		return ret;
+	}
+};
+
+//标准答案用了栈 下次记得注意这个问题
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        int n = temperatures.size();
+        vector<int> ans(n);
+        stack<int> s;
+        for (int i = 0; i < n; ++i) {
+            while (!s.empty() && temperatures[i] > temperatures[s.top()]) {
+                int previousIndex = s.top();
+                ans[previousIndex] = i - previousIndex;
+                s.pop();
+            }
+            s.push(i);
+        }
+        return ans;
+    }
+};
